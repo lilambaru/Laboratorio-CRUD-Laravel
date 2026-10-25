@@ -1,4 +1,4 @@
-# Laboratorio - Sistema CRUD de productos con Laravel
+# Laboratorio - Sistema CRUD de Productos con Laravel
 
 ### Desarrollo Web
 
@@ -11,19 +11,19 @@ Profesora: Irina Fong
 
 En este laboratorio se trabajó con el framework Laravel para implementar un sistema web que permite administrar productos mediante las operaciones fundamentales de un CRUD: Create (crear), Read (consultar), Update (actualizar) y Delete (eliminar).
 
-El proyecto utiliza PHP, Laravel, el patrón de arquitectura MVC, el motor de plantillas Blade y Bootstrap para presentar una interfaz que permite interactuar con los productos almacenados en una base de datos.
+El proyecto utiliza PHP, Laravel, el patrón de arquitectura MVC, el motor de plantillas Blade, Bootstrap y SQLite para presentar una interfaz que permite interactuar con los productos almacenados en una base de datos.
 
 Durante el desarrollo se revisaron y configuraron las rutas, controladores, modelos, migraciones, formularios y vistas necesarias para el funcionamiento del sistema.
 
 También se realizaron pruebas prácticas para comprobar que los usuarios pueden crear productos, visualizar sus datos, modificar la información registrada y eliminar productos del sistema.
 
-Finalmente, se verificaron las validaciones de los formularios y se documentaron los resultados mediante capturas de pantalla.
+Finalmente, se verificaron las validaciones de los formularios y se documentaron los resultados mediante capturas de pantalla, permitiendo demostrar el funcionamiento de cada operación realizada.
 
 ## 2. Objetivos
 
 ### Objetivo general
 
-Implementar y comprobar el funcionamiento de una aplicación CRUD utilizando Laravel, aplicando los conceptos relacionados con el desarrollo web, la programación PHP, el patrón MVC y la gestión de datos.
+Implementar y comprobar el funcionamiento de una aplicación CRUD utilizando Laravel, aplicando los conceptos relacionados con el desarrollo web, la programación PHP, el patrón MVC y la gestión de datos mediante SQLite.
 
 ### Objetivos específicos
 
@@ -35,10 +35,15 @@ Implementar y comprobar el funcionamiento de una aplicación CRUD utilizando Lar
 - Actualizar la información de productos existentes.
 - Eliminar registros de la base de datos.
 - Aplicar validaciones mediante Form Request.
+- Utilizar SQLite para almacenar la información del sistema.
 - Comprobar el funcionamiento mediante pruebas prácticas.
 - Documentar el código y los resultados obtenidos.
 
+---
+
 ## 3. Tecnologías utilizadas
+
+Para realizar este laboratorio se utilizaron las siguientes herramientas y tecnologías:
 
 | Tecnología | Función |
 |---|---|
@@ -48,11 +53,12 @@ Implementar y comprobar el funcionamiento de una aplicación CRUD utilizando Lar
 | Bootstrap | Diseño de la interfaz web |
 | Blade | Motor de plantillas utilizado para generar las vistas |
 | Eloquent ORM | Gestión de los datos mediante modelos |
+| SQLite | Base de datos utilizada para almacenar productos y otros registros |
 | Composer | Administración de dependencias PHP |
 | Node.js y NPM | Instalación y compilación de recursos frontend |
 | Vite | Compilación de CSS y JavaScript |
 | Visual Studio Code | Edición y organización del código |
-| WAMP | Entorno local de desarrollo |
+| WAMP | Entorno local utilizado para trabajar con PHP |
 | Git y GitHub | Control de versiones y publicación del proyecto |
 
 ## 4. Descripción general del sistema
@@ -77,6 +83,8 @@ Las principales funciones son:
 | Delete | Eliminar un producto registrado |
 
 Las operaciones se gestionan mediante el controlador `ProductController.php` y el modelo `Product.php`.
+
+La información se almacena en una base de datos SQLite, permitiendo que los productos registrados permanezcan disponibles después de cerrar y volver a abrir la aplicación.
 
 ## 5. Arquitectura MVC utilizada
 
@@ -122,7 +130,7 @@ El funcionamiento general del sistema sigue esta secuencia:
 2. Laravel identifica la ruta correspondiente.
 3. La solicitud llega al método del controlador.
 4. El controlador utiliza el modelo para consultar o modificar la información.
-5. La base de datos procesa la operación correspondiente.
+5. SQLite almacena, actualiza o proporciona los registros solicitados.
 6. Laravel devuelve una vista o redirige al usuario hacia otra página.
 
 Esta estructura permite mantener una organización clara del código.
@@ -194,7 +202,9 @@ Esta línea registra las rutas necesarias para administrar los productos.
 
 Gracias a `Route::resource`, no es necesario escribir individualmente las siete rutas del CRUD.
 
-Las rutas de productos están declaradas directamente, sin un middleware de autenticación aplicado a ese grupo. La protección del acceso puede incorporarse posteriormente como una mejora de seguridad.
+El archivo también contiene `Auth::routes()`, encargado de registrar las rutas del sistema de autenticación.
+
+Sin embargo, las rutas de productos están declaradas sin un middleware de autenticación aplicado directamente a ellas. Esta protección puede incorporarse posteriormente como una mejora de seguridad.
 
 ---
 
@@ -204,7 +214,7 @@ El modelo de productos se encuentra en:
 
 `app/Models/Product.php`
 
-Este modelo utiliza Eloquent para comunicarse con la base de datos.
+Este modelo utiliza Eloquent para comunicarse con la base de datos SQLite.
 
 La configuración principal es:
 
@@ -241,7 +251,65 @@ Esta configuración permite utilizar métodos como `create()` y `update()` para 
 
 ---
 
-## 9. Migración de productos
+## 9. Configuración de SQLite
+
+Para almacenar la información de los productos se utilizó SQLite.
+
+SQLite es un sistema de gestión de bases de datos que permite almacenar los registros en un archivo local sin necesidad de configurar un servidor independiente.
+
+Esto facilita las pruebas de desarrollo y permite trabajar con una base de datos sencilla.
+
+### 9.1. Configuración del archivo .env
+
+Laravel utiliza el archivo `.env` para establecer las variables de configuración del proyecto.
+
+Durante la revisión del laboratorio se comprobó que la conexión utilizada es:
+
+```env
+DB_CONNECTION=sqlite
+```
+
+Esta configuración indica que Laravel debe utilizar SQLite como motor de base de datos.
+
+### 9.2. Archivo de base de datos
+
+De manera predeterminada, Laravel utiliza el siguiente archivo para SQLite:
+
+`database/database.sqlite`
+
+Si el archivo no existe, se puede crear desde PowerShell utilizando:
+
+```powershell
+New-Item -ItemType File -Path database/database.sqlite
+```
+
+Este comando debe ejecutarse dentro de la carpeta principal del proyecto y solamente cuando el archivo todavía no existe.
+
+No es necesario configurar un servidor MySQL para utilizar esta base de datos.
+
+### 9.3. Ejecución de migraciones
+
+Después de configurar SQLite, se utiliza el siguiente comando:
+
+```bash
+php artisan migrate
+```
+
+Este comando permite ejecutar las migraciones y crear las tablas necesarias para el funcionamiento de la aplicación.
+
+Entre ellas se encuentra la tabla `products`, utilizada para almacenar la información de los productos.
+
+Para comprobar las migraciones disponibles y su estado se puede ejecutar:
+
+```bash
+php artisan migrate:status
+```
+
+Esto permite verificar cuáles migraciones se han ejecutado.
+
+---
+
+## 10. Migración de productos
 
 Las migraciones permiten administrar la estructura de las tablas de la base de datos mediante código PHP.
 
@@ -264,22 +332,24 @@ public function up(): void
 }
 ```
 
-### 9.1. Campos de la tabla
+### 10.1. Campos de la tabla
 
 | Campo | Tipo | Descripción |
 |---|---|---|
-| `id` | BIGINT | Identificador único |
+| `id` | Identificador entero | Identificador único |
 | `description` | VARCHAR | Descripción del producto |
-| `price` | DOUBLE(8,2) | Precio del producto |
+| `price` | DOUBLE | Precio del producto |
 | `stock` | INTEGER | Existencias disponibles |
 | `created_at` | TIMESTAMP | Fecha de creación |
 | `updated_at` | TIMESTAMP | Fecha de actualización |
 
-### 9.2. Método up()
+La definición de `price` utiliza una precisión de 8 y una escala de 2 en la migración, aunque el tratamiento exacto de este tipo depende del motor de base de datos.
+
+### 10.2. Método up()
 
 El método `up()` crea la tabla `products` con sus respectivos campos.
 
-### 9.3. Método down()
+### 10.3. Método down()
 
 El método `down()` permite revertir la migración mediante la eliminación de la tabla.
 
@@ -294,7 +364,7 @@ Las migraciones facilitan la reproducción de la estructura de la base de datos 
 
 ---
 
-## 10. Controlador ProductController
+## 11. Controlador ProductController
 
 El controlador principal se encuentra en:
 
@@ -302,7 +372,7 @@ El controlador principal se encuentra en:
 
 Este archivo contiene siete métodos encargados de administrar los productos.
 
-### 10.1. Método index()
+### 11.1. Método index()
 
 ```php
 public function index(Request $request): View
@@ -320,7 +390,7 @@ Después envía la información a la vista `product.index`, donde se presenta el
 
 También calcula el número inicial utilizado para enumerar los productos cuando existen varias páginas.
 
-### 10.2. Método create()
+### 11.2. Método create()
 
 ```php
 public function create(): View
@@ -333,7 +403,7 @@ public function create(): View
 
 Crea una instancia vacía del modelo y muestra el formulario de registro.
 
-### 10.3. Método store()
+### 11.3. Método store()
 
 ```php
 public function store(ProductRequest $request): RedirectResponse
@@ -345,11 +415,11 @@ public function store(ProductRequest $request): RedirectResponse
 }
 ```
 
-Este método recibe la información del formulario, utiliza `ProductRequest` para validarla y crea un nuevo producto.
+Este método recibe la información del formulario, utiliza `ProductRequest` para validarla y crea un nuevo producto en la base de datos SQLite.
 
 Después redirige al listado y muestra un mensaje de confirmación.
 
-### 10.4. Método show()
+### 11.4. Método show()
 
 ```php
 public function show($id): View
@@ -362,7 +432,7 @@ public function show($id): View
 
 Busca un producto mediante su identificador y envía los datos a la vista de detalles.
 
-### 10.5. Método edit()
+### 11.5. Método edit()
 
 ```php
 public function edit($id): View
@@ -375,7 +445,7 @@ public function edit($id): View
 
 Recupera el producto seleccionado y abre el formulario con sus datos actuales.
 
-### 10.6. Método update()
+### 11.6. Método update()
 
 ```php
 public function update(ProductRequest $request, Product $product): RedirectResponse
@@ -391,7 +461,7 @@ Valida los nuevos datos y actualiza el producto.
 
 Finalmente, regresa al listado con un mensaje que confirma la operación.
 
-### 10.7. Método destroy()
+### 11.7. Método destroy()
 
 ```php
 public function destroy($id): RedirectResponse
@@ -409,7 +479,7 @@ Estos siete métodos permiten gestionar las cuatro operaciones fundamentales del
 
 ---
 
-## 11. Validaciones del formulario
+## 12. Validaciones del formulario
 
 Las validaciones se encuentran en:
 
@@ -447,17 +517,21 @@ public function authorize(): bool
 
 Este método permite que las solicitudes superen la comprobación de autorización del formulario.
 
-Es importante mencionar que las reglas actuales de precio y stock solo comprueban que estos campos tengan valores. No incluyen todavía una validación explícita para verificar que el precio sea numérico o que el stock sea un número entero no negativo.
+Es importante mencionar que las reglas actuales de precio y stock solamente comprueban que estos campos tengan valores.
+
+No incluyen todavía una validación explícita para verificar que el precio sea numérico o que el stock sea un número entero no negativo.
+
+Esta limitación se identifica como una posible mejora del sistema.
 
 ---
 
-## 12. Vistas del sistema
+## 13. Vistas del sistema
 
 Las vistas se encuentran en:
 
 `resources/views/product/`
 
-### 12.1. index.blade.php
+### 13.1. index.blade.php
 
 Muestra la lista de productos registrados en una tabla.
 
@@ -467,7 +541,7 @@ También contiene el botón `Create New`, utilizado para abrir el formulario de 
 
 La vista utiliza `@foreach` para recorrer los productos y muestra mensajes de confirmación cuando se completa correctamente una operación.
 
-### 12.2. create.blade.php
+### 13.2. create.blade.php
 
 Contiene el formulario utilizado para registrar productos nuevos.
 
@@ -475,7 +549,7 @@ El formulario envía los datos a la ruta `products.store` mediante el método PO
 
 También utiliza `@csrf` para incluir la protección correspondiente contra solicitudes falsificadas.
 
-### 12.3. edit.blade.php
+### 13.3. edit.blade.php
 
 Permite actualizar un producto previamente registrado.
 
@@ -483,7 +557,7 @@ Utiliza la ruta `products.update` y el método HTTP PATCH, representado mediante
 
 El formulario presenta los datos actuales del producto para facilitar su modificación.
 
-### 12.4. form.blade.php
+### 13.4. form.blade.php
 
 Este archivo contiene los campos reutilizables de los formularios.
 
@@ -497,7 +571,7 @@ También utiliza `old()` para conservar los valores ingresados cuando ocurre un 
 
 Gracias a `@error` y `$errors->first()`, se pueden presentar mensajes relacionados con los campos que no cumplen las reglas establecidas.
 
-### 12.5. show.blade.php
+### 13.5. show.blade.php
 
 Muestra individualmente la información de un producto registrado.
 
@@ -507,13 +581,13 @@ También incluye el botón `Back`, utilizado para regresar al listado principal.
 
 ---
 
-## 13. Pruebas de funcionamiento del CRUD
+## 14. Pruebas de funcionamiento del CRUD
 
 Para comprobar el sistema se realizaron pruebas de creación, consulta, actualización, eliminación y validación.
 
 Los resultados se documentaron mediante nueve capturas de pantalla.
 
-### 13.1. Visualización de productos
+### 14.1. Visualización de productos
 
 Primero se ingresó a la dirección local del listado de productos.
 
@@ -525,7 +599,7 @@ El sistema mostró las columnas correspondientes a descripción, precio y stock,
 
 ![Captura 1 - Listado de productos](capturas/captura1.png)
 
-### 13.2. Formulario de creación
+### 14.2. Formulario de creación
 
 Se seleccionó el botón `Create New` para abrir el formulario de registro.
 
@@ -533,7 +607,7 @@ El sistema mostró los campos necesarios para agregar un producto.
 
 ![Captura 2 - Formulario de creación](capturas/captura2.png)
 
-### 13.3. Registro de un producto
+### 14.3. Registro de un producto
 
 Para comprobar la operación Create, se registró un producto con los siguientes valores:
 
@@ -543,13 +617,13 @@ Para comprobar la operación Create, se registró un producto con los siguientes
 | Price | 1.50 |
 | Stock | 20 |
 
-Después de presionar `Submit`, Laravel guardó el producto y mostró el mensaje `Product created successfully`.
+Después de presionar `Submit`, Laravel guardó el producto en SQLite y mostró el mensaje `Product created successfully`.
 
 El nuevo registro apareció en el listado junto con los demás productos.
 
 ![Captura 3 - Producto creado](capturas/captura3.png)
 
-### 13.4. Consulta de un producto
+### 14.4. Consulta de un producto
 
 Para comprobar la operación Read, se seleccionó el botón `Show` correspondiente al producto Manzana.
 
@@ -563,7 +637,7 @@ También se mostró el botón `Back` para regresar al listado.
 
 ![Captura 4 - Consulta del producto](capturas/captura4.png)
 
-### 13.5. Formulario de edición
+### 14.5. Formulario de edición
 
 Se seleccionó el botón `Edit` correspondiente al producto Manzana.
 
@@ -573,7 +647,7 @@ Esto permitió comprobar que el formulario se carga con la información actual d
 
 ![Captura 5 - Formulario de edición](capturas/captura5.png)
 
-### 13.6. Actualización del producto
+### 14.6. Actualización del producto
 
 Para comprobar la operación Update, se modificaron los siguientes datos:
 
@@ -589,7 +663,7 @@ El listado reflejó correctamente el nuevo precio y la nueva cantidad disponible
 
 ![Captura 6 - Producto actualizado](capturas/captura6.png)
 
-### 13.7. Confirmación de eliminación
+### 14.7. Confirmación de eliminación
 
 Para comprobar la operación Delete, se seleccionó el botón rojo `Delete`.
 
@@ -599,7 +673,7 @@ La confirmación permite cancelar la operación si el usuario no desea continuar
 
 ![Captura 7 - Confirmación de eliminación](capturas/captura7.png)
 
-### 13.8. Eliminación del producto
+### 14.8. Eliminación del producto
 
 Después de confirmar la eliminación, Laravel eliminó el registro de Manzana.
 
@@ -609,7 +683,7 @@ También se comprobó que el producto ya no aparecía en el listado, mientras qu
 
 ![Captura 8 - Producto eliminado](capturas/captura8.png)
 
-### 13.9. Prueba de validación
+### 14.9. Prueba de validación
 
 Finalmente, se realizó una prueba para comprobar el comportamiento del formulario ante información incompleta.
 
@@ -625,7 +699,7 @@ El sistema impidió completar el registro y conservó los valores válidos intro
 
 ---
 
-## 14. Resumen de las pruebas
+## 15. Resumen de las pruebas
 
 | Prueba | Resultado |
 |---|---|
@@ -641,13 +715,13 @@ El sistema impidió completar el registro y conservó los valores válidos intro
 
 Las nueve pruebas documentadas permitieron comprobar el funcionamiento de las principales opciones del sistema.
 
-## 15. Instalación y ejecución del proyecto
+## 16. Instalación y ejecución del proyecto
 
 Para reproducir el proyecto en otro equipo es necesario preparar un entorno compatible con Laravel.
 
-Se necesitan PHP, Composer, Node.js, NPM y una base de datos compatible con la configuración de la aplicación.
+Se necesitan PHP, Composer, Node.js, NPM y la extensión SQLite correspondiente para PHP.
 
-### 15.1. Descargar el repositorio
+### 16.1. Descargar el repositorio
 
 El proyecto se encuentra disponible en:
 
@@ -661,7 +735,7 @@ Comando de clonación:
 git clone https://github.com/lilambaru/Laboratorio-CRUD-Laravel.git
 ```
 
-### 15.2. Abrir el proyecto
+### 16.2. Abrir el proyecto
 
 Desde la terminal se accede a la carpeta descargada:
 
@@ -669,7 +743,7 @@ Desde la terminal se accede a la carpeta descargada:
 cd Laboratorio-CRUD-Laravel
 ```
 
-### 15.3. Instalar las dependencias PHP
+### 16.3. Instalar las dependencias PHP
 
 ```bash
 composer install
@@ -677,7 +751,7 @@ composer install
 
 Composer instalará las dependencias definidas en el proyecto.
 
-### 15.4. Configurar el entorno
+### 16.4. Configurar el entorno
 
 Crear el archivo `.env` a partir de `.env.example`.
 
@@ -693,17 +767,43 @@ Después se genera la clave de la aplicación:
 php artisan key:generate
 ```
 
-### 15.5. Configurar la base de datos
+### 16.5. Configurar la base de datos SQLite
 
-En el archivo `.env` se debe configurar la conexión correspondiente a la base de datos utilizada.
+En este proyecto se utilizó SQLite como sistema de base de datos.
 
-Para trabajar con MySQL en WAMP, por ejemplo, se debe establecer `DB_CONNECTION=mysql` y configurar el servidor, puerto, nombre de la base de datos, usuario y contraseña.
+SQLite permite almacenar la información mediante un archivo local, sin necesidad de configurar un servidor MySQL.
 
-La base de datos indicada debe existir y la configuración debe coincidir con los datos del entorno local.
+En el archivo `.env` se establece:
 
-No deben publicarse contraseñas ni claves privadas en GitHub.
+```env
+DB_CONNECTION=sqlite
+```
 
-### 15.6. Ejecutar las migraciones
+El archivo de la base de datos se encuentra normalmente en:
+
+`database/database.sqlite`
+
+Si el archivo todavía no existe, se puede crear desde PowerShell ejecutando:
+
+```powershell
+if (-not (Test-Path "database/database.sqlite")) {
+    New-Item -ItemType File -Path "database/database.sqlite"
+}
+```
+
+Este comando comprueba si el archivo existe y solamente lo crea cuando es necesario.
+
+Además, PHP debe tener habilitadas las extensiones necesarias para utilizar SQLite.
+
+Para comprobarlo desde PowerShell, se puede ejecutar:
+
+```powershell
+php -m | Select-String "sqlite"
+```
+
+El comando permite consultar si aparecen las extensiones relacionadas con SQLite en la configuración de PHP.
+
+### 16.6. Ejecutar las migraciones
 
 Una vez configurada la base de datos se ejecuta:
 
@@ -713,7 +813,13 @@ php artisan migrate
 
 Esto permite crear las tablas definidas en las migraciones, incluida la tabla de productos.
 
-### 15.7. Instalar las dependencias frontend
+Para revisar su estado:
+
+```bash
+php artisan migrate:status
+```
+
+### 16.7. Instalar las dependencias frontend
 
 En Windows PowerShell se puede utilizar:
 
@@ -727,7 +833,7 @@ Posteriormente, se compilan los recursos:
 npm.cmd run build
 ```
 
-### 15.8. Iniciar el servidor
+### 16.8. Iniciar el servidor
 
 Para ejecutar la aplicación en el puerto utilizado durante las pruebas:
 
@@ -743,9 +849,11 @@ Para acceder al listado de productos:
 
 http://127.0.0.1:8001/products
 
+La base de datos utilizada será la configurada en el archivo `.env`.
+
 ---
 
-## 16. Seguridad y buenas prácticas
+## 17. Seguridad y buenas prácticas
 
 El proyecto utiliza diferentes mecanismos propios de Laravel para organizar y procesar las solicitudes.
 
@@ -760,9 +868,11 @@ Entre ellos se encuentran:
 
 Estas funcionalidades contribuyen a mantener una estructura más organizada.
 
+El archivo `.env` no debe publicarse en GitHub porque puede contener claves y configuraciones privadas.
+
 Sin embargo, la aplicación todavía puede mejorarse incorporando reglas de validación más estrictas, restricciones de acceso y un manejo más robusto de registros inexistentes.
 
-## 17. Posibles mejoras
+## 18. Posibles mejoras
 
 Como futuras mejoras del proyecto se consideran las siguientes:
 
@@ -781,9 +891,9 @@ Estas mejoras permitirían aumentar la seguridad, precisión y facilidad de uso 
 
 ---
 
-## 18. Resultados obtenidos
+## 19. Resultados obtenidos
 
-El desarrollo del laboratorio permitió implementar y comprobar las cuatro operaciones principales de un sistema CRUD utilizando Laravel.
+El desarrollo del laboratorio permitió implementar y comprobar las cuatro operaciones principales de un sistema CRUD utilizando Laravel y SQLite.
 
 Se logró registrar productos nuevos, visualizar su información, modificar los datos existentes y eliminar registros.
 
@@ -793,7 +903,9 @@ Las capturas de pantalla permitieron documentar el comportamiento de la aplicaci
 
 Además, el análisis de las rutas, modelos, controladores, migraciones y vistas permitió comprender cómo se relacionan los diferentes componentes de Laravel.
 
-## 19. Conclusión
+La utilización de SQLite permitió trabajar con una base de datos local sin necesidad de instalar o configurar un servidor MySQL adicional para el CRUD.
+
+## 20. Conclusión
 
 Mediante el desarrollo de este laboratorio se fortalecieron los conocimientos relacionados con la creación de aplicaciones web utilizando Laravel y PHP.
 
@@ -801,14 +913,17 @@ La implementación del sistema CRUD permitió comprender cómo se gestionan los 
 
 También se aplicaron conceptos relacionados con el patrón MVC, el uso de Eloquent, la configuración de rutas, el diseño de formularios con Blade y Bootstrap, y la validación de datos mediante Form Request.
 
+El uso de SQLite permitió comprender cómo una aplicación puede almacenar y administrar información mediante una base de datos local.
+
 Las pruebas realizadas permitieron verificar que las principales funcionalidades respondían correctamente, mientras que la documentación mediante capturas facilitó la presentación de los resultados obtenidos.
 
 Finalmente, el uso de Git y GitHub permitió organizar y publicar el código fuente del proyecto junto con sus evidencias, facilitando su revisión y reproducción como parte del aprendizaje de desarrollo web.
 
-## 20. Referencias
+## 21. Referencias
 
 - Laravel. Documentación oficial: https://laravel.com/docs
 - PHP. Documentación oficial: https://www.php.net/docs.php
+- SQLite. Documentación oficial: https://www.sqlite.org/docs.html
 - Bootstrap. Documentación oficial: https://getbootstrap.com/docs/
 - Composer. Documentación oficial: https://getcomposer.org/doc/
 - Git. Documentación oficial: https://git-scm.com/doc
